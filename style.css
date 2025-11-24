@@ -1,0 +1,243 @@
+:root {
+    --bg-color: #050505;
+    --text-color: #e0e0e0;
+    --accent: #ff003c; /* Cyberpunk Red */
+    --glitch-cyan: #00f3ff;
+    --grain-intensity: 0.15;
+    --font-stack: 'Courier New', Courier, monospace; /* Raw monospaced */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    cursor: crosshair; /* Aggressive cursor */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-stack);
+    overflow-x: hidden;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+}
+
+/* --- BACKGROUND LAYERS --- */
+
+/* 1. The Noise Canvas (Handled by JS) */
+#noise-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: var(--grain-intensity);
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+/* 2. The Grid Overlay */
+.grid-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: 
+        linear-gradient(transparent 95%, rgba(255, 255, 255, 0.05) 50%),
+        linear-gradient(90deg, transparent 95%, rgba(255, 255, 255, 0.05) 50%);
+    background-size: 4vw 4vw;
+    pointer-events: none;
+    transform: scale(1.1); /* Slight zoom for parallax feel */
+}
+
+/* --- TYPOGRAPHY --- */
+.content-wrapper {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    width: 100%;             /* Force full width */
+    padding: 0 5%;           /* 5% Safety buffer on left/right */
+    mix-blend-mode: difference; 
+    transform-style: preserve-3d;
+    word-break: break-word;  /* Prevents overflow if text gets too long */
+}
+
+h1 {
+    /* Adjusted clamp: smaller minimum size (2rem) to fit narrow phones */
+    font-size: clamp(2rem, 13vw, 12rem); 
+    line-height: 0.8;
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    position: relative;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--text-color);
+    transition: all 0.1s ease-out;
+    
+    /* Ensure the text itself doesn't overflow its container */
+    max-width: 95%; 
+}
+
+
+/* The solid fill that appears/disappears */
+h1::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--text-color);
+    opacity: 0; /* Hidden by default */
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    transition: opacity 0.2s;
+}
+
+/* The RGB Split Shadow */
+.glitch-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+.glitch-layer span {
+    font-size: clamp(3rem, 15vw, 12rem);
+    line-height: 0.8;
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    position: absolute;
+    -webkit-text-stroke: 0;
+}
+
+.glitch-red {
+    color: var(--accent);
+    transform: translate(-2px, -2px);
+    mix-blend-mode: screen;
+}
+
+.glitch-cyan {
+    color: var(--glitch-cyan);
+    transform: translate(2px, 2px);
+    mix-blend-mode: screen;
+}
+
+p.subtitle {
+    font-size: clamp(0.8rem, 2vw, 1.5rem);
+    margin-top: 2rem;
+    background: var(--text-color);
+    color: var(--bg-color);
+    display: inline-block;
+    padding: 0.2em 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    transform: skewX(-15deg);
+    box-shadow: 5px 5px 0px var(--accent);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+.scan-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 20;
+    animation: scanline 4s linear infinite;
+    pointer-events: none;
+}
+
+/* Hover States */
+h1:hover {
+    -webkit-text-stroke: 2px var(--accent);
+    transform: scale(1.02);
+}
+h1:hover::before {
+    opacity: 1;
+}
+
+/* --- SOCIAL ICONS --- */
+.social-nav {
+    margin-top: 20rem;
+    display: flex;
+    justify-content: center;
+    gap: 4rem; /* Spacing between icons */
+}
+
+.social-link {
+    position: relative;
+    display: inline-block;
+    width: 3rem;  /* Size of the icons */
+    height: 3rem;
+    color: var(--text-color);
+    transition: transform 0.2s;
+}
+
+.social-link svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Main visible icon */
+.icon-main {
+    position: relative;
+    /* Use strokes only to match the brutalist text style */
+    stroke: var(--text-color); 
+    stroke-width: 1.5px;
+}
+
+/* The container for the red/cyan ghosts */
+.icon-glitch-layer {
+    position: absolute;
+    top: -3px;
+    left: -23px;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.icon-glitch-red {
+    position: absolute;
+    stroke: var(--accent);
+    opacity: 0.7;
+    mix-blend-mode: screen;
+}
+
+.icon-glitch-cyan {
+    position: absolute;
+    stroke: var(--glitch-cyan);
+    opacity: 0.7;
+    mix-blend-mode: screen;
+}
+
+/* Hover Effects */
+.social-link:hover .icon-main {
+    stroke: #fff; /* Flash white on hover */
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
+}
+
+.social-link:hover {
+    transform: scale(1.1);
+}
+
