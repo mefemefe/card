@@ -152,8 +152,8 @@ p.subtitle {
 
 /* --- ANIMATIONS --- */
 @keyframes scanline {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100%); }
+    0% { transform: translateY(0%); }
+    100% { transform: translateY(100vh); }
 }
 
 .scan-bar {
@@ -161,10 +161,10 @@ p.subtitle {
     top: 0;
     left: 0;
     width: 100%;
-    height: 5px;
+    height: 1px;
     background: rgba(255, 255, 255, 0.3);
     z-index: 20;
-    animation: scanline 4s linear infinite;
+    animation: scanline 6s linear infinite;
     pointer-events: none;
 }
 
